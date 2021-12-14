@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios'
 import { signOut } from '../contexts/AuthContext'
 import { setCookie, parseCookies } from 'nookies'
 import { GetServerSidePropsContext } from 'next'
+import { AuthTokenError } from './errors/AuthTokenError'
 
 type Context = undefined | GetServerSidePropsContext
 type FailedRequestQueue = {
@@ -75,6 +76,7 @@ export function setupAPIClient(ctx: Context = undefined) { // or '= undefined' |
                 })
             } else {
                 if (process.browser) signOut() // Redirect to login
+                else return Promise.reject(new AuthTokenError())
             }
         }
 
@@ -82,4 +84,4 @@ export function setupAPIClient(ctx: Context = undefined) { // or '= undefined' |
     })
 
     return api
-}// matheus.dev.07@gmail.com
+}
