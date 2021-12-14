@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import { createContext, ReactNode, useState } from 'react'
+import { setCookie } from 'nookies'
 import { api } from '../services/api'
 
 type User = {
@@ -39,10 +40,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
              *      2.1. Salvar o token no sessionStorage
              *      2.2. Salvar o refreshToken no sessionStorage
              *
-             *  3. cookies (pode ser usado em browsers(client) e SSR/Node/Backend)
+             *  3. cookies* (pode ser usado em browsers(client) e SSR/Node/Backend)
              *      3.1. Salvar o token no cookie
              *      3.2. Salvar o refreshToken no cookie
              */
+
+            setCookie(undefined, 'auth_app.token', token, {
+                maxAge: 60 * 60 * 24 * 30, // 30 days (seconds * minutes * hours * days)
+                path: '/', // Quando só '/' o cookie é acessível em toda a aplicação (cookie global)
+            })
+            setCookie(undefined, 'auth_app.refreshToken', refreshToken, { maxAge: 60 * 60 * 24 * 30, path: '/' })
 
             setUser({ email, roles, permissions })
 
