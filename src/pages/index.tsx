@@ -1,16 +1,35 @@
 import type { NextPage } from 'next'
 
+import { AuthContext } from '../contexts/AuthContext'
+
+import { FormEvent, useContext, useState } from 'react'
+
 import Head  from 'next/head'
-import Image from 'next/image'
 
 const Home: NextPage = () => {
+    const [ email,    setEmail    ] = useState('')
+    const [ password, setPassword ] = useState('')
+
+    const { signIn } = useContext(AuthContext)
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault()
+
+        const data = { email, password }
+
+        await signIn(data)
+    }
+
     return (
         <>
-            <Head><title>Início | Auth</title></Head>
+            <Head><title>Login | Auth</title></Head>
 
-            <main>
-                <h1>Hello Word</h1>
-            </main>
+            <h1>Login</h1>
+            <form onSubmit={handleSubmit}>
+                <input type='email' value={email} onChange={e => setEmail(e.target.value)} />
+                <input type='password' value={password} onChange={e => setPassword(e.target.value)} />
+                <button type='submit'>Entrar</button>
+            </form>
         </>
     )
 }
