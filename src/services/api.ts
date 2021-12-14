@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios'
-import { setCookie, parseCookies } from 'nookies'
+import { signOut } from '../contexts/AuthContext'
+import { setCookie, parseCookies, destroyCookie } from 'nookies'
 
 type FailedRequestQueue = {
     resolve: (token: string) => void
@@ -18,9 +19,13 @@ export const api = axios.create({
     }
 })
 
-api.interceptors.response.use(res => res, (error: AxiosError) => {
-    if (error.response?.status === 401) {
-        if (error.response.data?.code === 'token_expired') {
+api.interceptors.response.use(res => {
+    return res
+},
+(error: AxiosError) => {
+    if (!error.response) return
+    if (error.response.status === 401) {
+        if (error.response.data?.code === 'token.expired') {
             // Renovar token
             cookies = parseCookies()
 
@@ -51,7 +56,7 @@ api.interceptors.response.use(res => res, (error: AxiosError) => {
             return new Promise((resolve, reject) => {
                 failedRequestsQueue.push({
                     resolve: (token: string) => { // onSuccess
-                        if(!originalConfig?.headers) return
+                        if (!originalConfig?.headers) return
 
                         originalConfig.headers['Authorization'] = `Bearer ${token}`
 
@@ -63,7 +68,9 @@ api.interceptors.response.use(res => res, (error: AxiosError) => {
                 })
             })
         } else {
-            // Logout
+            signOut() // Redirect to login
         }
     }
+
+    return Promise.reject(error)
 })
