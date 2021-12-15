@@ -7,13 +7,10 @@ import { useContext, useEffect } from 'react'
 import { api } from '../services/apiClient'
 import { setupAPIClient } from '../services/api'
 import { useCan } from '../hooks/useCan'
+import { Can } from '../components/Can'
 
 const Dashboard: NextPage = () => {
     const { user } = useContext(AuthContext)
-
-    const userCanSeeMetrics = useCan({
-        roles: ['administrator', 'editor'],
-    })
 
     useEffect(() => {
         api.get('/me')
@@ -34,8 +31,11 @@ const Dashboard: NextPage = () => {
                     <br/>
                     <hr/>
                     <br/>
+
                     <h3>User can see metrics?</h3>
-                    { userCanSeeMetrics && <span>Yes</span> }
+                    <Can permissions={['metrics.list']}>
+                        <span>yes</span>
+                    </Can>
                 </>
             }
         </>
