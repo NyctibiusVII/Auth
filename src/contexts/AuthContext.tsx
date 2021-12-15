@@ -14,16 +14,21 @@ type SignInCredentials = {
     password: string
 }
 interface AuthContextData {
-    signIn(credentials: SignInCredentials): Promise<void>
+    signIn: (credentials: SignInCredentials) => Promise<void>
+    signOut: () => void
     isAuthenticated: boolean
     user: User | undefined
 }
 
 export const AuthContext = createContext({} as AuthContextData)
 
+let authChannel: BroadcastChannel
+
 export const signOut = () => {
     destroyCookie(undefined, 'auth_app.token')
     destroyCookie(undefined, 'auth_app.refreshToken')
+
+    authChannel.postMessage('signOut')
 
     Router.push('/') // Redirect to login
 }
@@ -31,6 +36,20 @@ export const signOut = () => {
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [ user, setUser ] = useState<User>()
     const isAuthenticated = !!user
+
+    useEffect(() => {
+        authChannel = new BroadcastChannel('auth') // Só executa pelo browser
+
+        authChannel.onmessage = message => {
+            switch (message.data) {
+                case 'signOut':
+                    signOut()
+                    break
+                default:
+                    break
+            }
+        }
+    }, [])
 
     useEffect(() => {
         const { 'auth_app.token': tokenCookie } = parseCookies()
@@ -81,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return (
         <AuthContext.Provider
-            value={{ signIn, isAuthenticated, user }}
+            value={{ signIn, signOut, isAuthenticated, user }}
         >
             {children}
         </AuthContext.Provider>

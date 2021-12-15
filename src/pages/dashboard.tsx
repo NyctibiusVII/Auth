@@ -1,6 +1,6 @@
 import { NextPage } from 'next'
 
-import { AuthContext } from '../contexts/AuthContext'
+import { AuthContext, signOut } from '../contexts/AuthContext'
 import { withSSRAuth } from '../utils/withSSRAuth'
 
 import { useContext, useEffect } from 'react'
@@ -27,7 +27,8 @@ const Dashboard: NextPage = () => {
                     <h3>User</h3>
                     <span>Email: {user.email}</span><br/>
                     <span>Roles: {user.roles}</span><br/>
-                    <span>Permissions: {user.permissions}</span>
+                    <span>Permissions: {user.permissions}</span><br/>
+                    <button onClick={signOut}>SignOut</button>
                     <br/>
                     <hr/>
                     <br/>
