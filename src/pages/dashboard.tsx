@@ -12,11 +12,11 @@ import { Can } from '../components/Can'
 const Dashboard: NextPage = () => {
     const { user } = useContext(AuthContext)
 
-    useEffect(() => {
+    /*useEffect(() => {
         api.get('/me')
             .then(res => console.log('Dashboard>useEffect>then>res: ', res))
             .catch(err => console.log('Dashboard>useEffect>catch>err: ', err))
-    }, [])
+    }, [])*/
 
     return (
         <>
@@ -47,7 +47,7 @@ export const getServerSideProps = withSSRAuth(async (ctx) => {
     const apiClient = setupAPIClient(ctx)
 
     const res = await apiClient.get('/me')
-    console.log('Dashboard>SSR>apiClient>/me', res.data)
+    //console.log('Dashboard>SSR>apiClient>/me', res.data)
 
     return { props: {} }
 })
